@@ -2,6 +2,7 @@
   import { enhance } from '$app/forms'
   import type { ActionData } from './$types'
   import { curriculumStore } from '$lib/stores'
+  import OfflineMerge from '$lib/OfflineMerge.svelte'
   let { form }: { form: ActionData } = $props()
   let selectedIds = $state<string[]>([])
   let reviewComments = $state<Record<string, string>>({})
@@ -83,6 +84,8 @@
       </div>
     </aside>
   </div>
+
+  <OfflineMerge />
 </section>
 
 <style>

@@ -60,4 +60,71 @@ export const reviewItems: ReviewItem[] = [
   { id: 'REV-203', courseId: 'C-205', requirementId: 'GR-01', evidence: '图算法实践已覆盖复杂工程问题建模，作业与测验记录完整。', submitter: '数据结构课程组', status: '已附议', comment: '覆盖证据充分，建议保留。' },
 ]
 
-export const seedState = { nodes, mappings, reviewItems, revision: 'R12', locked: false }
+// R11 冻结版本：保留上一轮映射权重与旧意见，离线合并后仍可追溯
+const r11ReviewItems: ReviewItem[] = [
+  { id: 'REV-201', courseId: 'C-308', requirementId: 'GR-03', evidence: '需求追踪矩阵与迭代评审记录，测试覆盖报告待补。', submitter: '软件工程课程组', status: '待审阅', comment: '' },
+  { id: 'REV-202', courseId: 'C-308', requirementId: 'GR-06', evidence: '拟增加数据合规案例分析，评分记录尚未提供。', submitter: '软件工程课程组', status: '待审阅', comment: '' },
+  { id: 'REV-203', courseId: 'C-205', requirementId: 'GR-01', evidence: '图算法实践已覆盖复杂工程问题建模，测验记录待补。', submitter: '数据结构课程组', status: '待审阅', comment: '' },
+]
+
+const r11Mappings: Mapping[] = mappings.map((mapping) => (mapping.id === 'M-05' ? { ...mapping, weight: 0.85 } : mapping))
+
+export const currentDraft = 'C-308 对 GR-06 的案例证据不足，需补充评分记录。'
+
+export const seedState = {
+  nodes,
+  mappings,
+  reviewItems,
+  revision: 'R12',
+  locked: false,
+  draft: currentDraft,
+  pendingMerges: [] as import('./offline').PendingMerge[],
+  mergeRecords: [
+    {
+      id: 'MR-20260912-01',
+      sheetId: 'OS-20260912-01',
+      frozenRevision: 'R11',
+      mergedRevision: 'R12',
+      reviewer: '院系审阅人：周岚',
+      mergedAt: '2026-09-12T15:20:00+08:00',
+      applied: [
+        {
+          itemId: 'REV-203',
+          changes: [
+            { field: 'status', fieldLabel: '状态', from: '待审阅', to: '已附议', source: 'offline' as const },
+            {
+              field: 'evidence',
+              fieldLabel: '证据',
+              from: '图算法实践已覆盖复杂工程问题建模，测验记录待补。',
+              to: '图算法实践已覆盖复杂工程问题建模，作业与测验记录完整。',
+              source: 'offline' as const,
+            },
+            {
+              field: 'comment',
+              fieldLabel: '审阅意见',
+              from: '',
+              to: '覆盖证据充分，建议保留。',
+              source: 'local' as const,
+            },
+          ],
+        },
+      ],
+    },
+  ] as import('./offline').MergeRecord[],
+  frozenVersions: [
+    {
+      revision: 'R11',
+      frozenAt: '2026-09-05T09:00:00+08:00',
+      mappings: r11Mappings,
+      reviewItems: r11ReviewItems,
+      draft: 'R11 草稿：C-205 图算法单元需补充测验记录，C-308 权重拟从 0.85 调整。',
+    },
+    {
+      revision: 'R12',
+      frozenAt: '2026-09-12T16:00:00+08:00',
+      mappings,
+      reviewItems,
+      draft: currentDraft,
+    },
+  ] as import('./offline').FrozenSnapshot[],
+}
